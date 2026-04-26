@@ -266,12 +266,29 @@ function showTab(tab) {
     if (tab === "camera") {
         document.getElementById("camera-tab").classList.remove("d-none");
 
-        navigator.mediaDevices.getUserMedia({ video: true })
+        // ✅ BACK CAMERA CODE (ONLY CHANGE)
+        navigator.mediaDevices.getUserMedia({
+            video: {
+                facingMode: { exact: "environment" }
+            }
+        })
         .then(s => {
             stream = s;
             video.srcObject = s;
         })
-        .catch(() => alert("Camera not working"));
+        .catch(async () => {
+            // fallback if exact fails
+            try {
+                const s = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: "environment" }
+                });
+                stream = s;
+                video.srcObject = s;
+            } catch {
+                alert("Camera not working");
+            }
+        });
+
     } else {
         document.getElementById("upload-tab").classList.remove("d-none");
 
@@ -280,6 +297,7 @@ function showTab(tab) {
         }
     }
 }
+
 captureBtn.onclick = () => {
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
@@ -302,5 +320,4 @@ captureBtn.onclick = () => {
 };
 
 </script>
-
 {% endblock %}
