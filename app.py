@@ -340,6 +340,58 @@ def view_shop_products(shop_id):
         shop=shop,
         products=products
     )
+
+# ================== CAMERA ==================
+import base64, uuid
+from io import BytesIO
+
+@app.route("/camera_predict", methods=["POST"])
+@login_required
+def camera_predict():
+    data = request.form.get("image")
+
+    if not data:
+        flash("Camera image not received")
+        return redirect(url_for("index"))
+
+    try:
+        # Decode base64 image
+        image_data = base64.b64decode(data.split(",")[1])
+    except Exception:
+        flash("Invalid image format")
+        return redirect(url_for("index"))
+
+    # Unique filename
+    filename = f"camera_{uuid.uuid4().hex}.jpg"
+    path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
+
+    # Save image
+    with open(path, "wb") as f:
+        f.write(image_data)
+
+    # Prediction
+    prediction, confidence, treatment = predict_disease(path)
+
+    # ✅ Save to MongoDB (correct way)
+    mongo.db.history.insert_one({
+        "user_id": str(current_user.id),
+        "filename": f"uploads/{filename}",
+        "prediction": prediction,
+        "confidence": confidence,
+        "fertilizer": ", ".join(treatment["Fertilizer"]),
+        "pesticide": ", ".join(treatment["Pesticide"]),
+        "organic": ", ".join(treatment["Organic"])
+    })
+
+    return render_template(
+        "index.html",
+        file=f"uploads/{filename}",
+        prediction=prediction,
+        confidence=confidence,
+        fertilizer=treatment["Fertilizer"],
+        pesticide=treatment["Pesticide"],
+        organic=treatment["Organic"]
+    )
 # ------------------ RUN ------------------
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5001, debug=True)
