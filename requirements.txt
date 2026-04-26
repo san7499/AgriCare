@@ -5,3 +5,5 @@ numpy
 pillow
 python-dotenv
 flask-login
+flask-pymongo
+dnspython
