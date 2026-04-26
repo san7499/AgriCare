@@ -2,7 +2,10 @@ import os
 import math
 import base64, uuid
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
+from dotenv import load_dotenv
+import os
 
+load_dotenv()
 import requests
 
 from flask import Flask, render_template, request, redirect, url_for, flash
@@ -26,7 +29,7 @@ ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg"}
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
-app.config["MONGO_URI"] = "mongodb+srv://sonu74swami_db_user:Swami1234@cluster0.fsqldpa.mongodb.net/agricare?retryWrites=true&w=majority"
+app.config["MONGO_URI"] = os.getenv("MONGO_URI")
 
 mongo = PyMongo(app)
 
@@ -58,7 +61,7 @@ def load_user(user_id):
         return None
 
 # ------------------ API ------------------
-API_URL = "https://sonu74swami-agricare.hf.space/predict"
+API_KEY = os.getenv("MODEL_API_KEY")
 
 # ------------------ PREDICTION ------------------
 def predict_disease(img_path):
