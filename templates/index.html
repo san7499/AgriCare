@@ -1,0 +1,213 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+.plant-img {
+    width: 110px;
+    height: 110px;
+    object-fit: cover;
+    border: 4px solid #28a745;
+    transition: transform 0.3s ease;
+}
+.plant-img:hover {
+    transform: scale(1.1);
+}
+</style>
+
+<div class="container my-4">
+
+    <!-- Language Selector -->
+    <div class="d-flex justify-content-end mb-3">
+        <select id="language-select" class="form-select form-select-sm w-auto">
+            <option value="en">English</option>
+            <option value="hi">हिंदी</option>
+            <option value="mr">मराठी</option>
+            <option value="ta">தமிழ்</option>
+            <option value="te">తెలుగు</option>
+            <option value="gu">ગુજરાતી</option>
+        </select>
+    </div>
+
+    <!-- Tabs -->
+    <ul class="nav nav-pills mb-4 justify-content-center">
+        <li class="nav-item">
+            <button class="nav-link active" onclick="showTab('upload')">
+                <i class="fa-solid fa-upload me-2"></i> Upload Image
+            </button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" onclick="showTab('camera')">
+                <i class="fa-solid fa-camera me-2"></i> Capture Image
+            </button>
+        </li>
+    </ul>
+
+    <div class="row g-4">
+
+        <!-- LEFT COLUMN -->
+        <div class="col-lg-6">
+
+            <!-- Upload Section -->
+            <div class="card p-4" id="upload-tab">
+                <h5 class="text-center mb-3">Upload Leaf Image</h5>
+                <form method="POST" enctype="multipart/form-data">
+                    <input class="form-control mb-3" type="file" name="file" accept="image/*" required>
+                    <button type="submit" class="btn btn-success w-100">
+                        Upload & Predict
+                    </button>
+                </form>
+            </div>
+
+            <!-- Camera Section -->
+            <div class="card p-4 d-none" id="camera-tab">
+                <h5 class="text-center mb-3">Capture Leaf Image</h5>
+
+                <video id="camera" autoplay playsinline class="w-100 rounded mb-3"></video>
+                <canvas id="canvas" class="d-none"></canvas>
+
+                <button id="capture-btn" class="btn btn-warning w-100">
+                    Capture & Predict
+                </button>
+            </div>
+
+            <!-- Supported Plants Section -->
+            <div class="card mt-4 p-4 text-center">
+                <h5 class="mb-4">Supported Plants</h5>
+
+                {% set plants = [
+                "Corn","Grape","Mango","Peanut","Potato","Tomato","Bell_Pepper"
+                ] %}
+
+                <div class="d-flex flex-wrap justify-content-center gap-4">
+                    {% for plant in plants %}
+                    <div class="text-center">
+                        <img src="{{ url_for('static', filename='plants/' ~ plant ~ '.jpg') }}"
+                             class="rounded-circle plant-img shadow"
+                             alt="{{ plant }}">
+                        <p class="mt-2">{{ plant.replace('_',' ') }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Weather Section -->
+            <div class="card mt-4 p-4 text-center">
+                <h5>Current Weather</h5>
+                <img id="weather-icon" width="80">
+                <p id="weather-desc">Fetching weather...</p>
+                <p>🌡️ <span id="temp">--</span> °C</p>
+                <p>💧 <span id="humidity">--</span>%</p>
+                <p>🌬️ <span id="wind">--</span> m/s</p>
+            </div>
+
+        </div>
+
+        <!-- RIGHT COLUMN -->
+        {% if prediction %}
+        <div class="col-lg-6">
+
+            <img src="{{ url_for('static', filename=file) }}"
+                 class="img-fluid rounded mb-3">
+
+            <div class="card p-4">
+                <h5 class="text-center mb-3">Prediction Result</h5>
+
+                <p>
+                    <b>Status:</b>
+                    <span class="badge {% if 'healthy' in prediction.lower() %}bg-success{% else %}bg-danger{% endif %}">
+                        {{ prediction.replace('___',' - ').replace('_',' ') }}
+                    </span>
+                </p>
+
+                <p><b>Confidence:</b> {{ confidence }}%</p>
+
+                <div class="progress mb-3" style="height:25px;">
+                    <div class="progress-bar bg-success"
+                         style="width: {{ confidence }}%;">
+                        {{ confidence }}%
+                    </div>
+                </div>
+
+                <div class="alert alert-primary">
+                    <h6>Fertilizer</h6>
+                    <ul>
+                        {% for f in fertilizer %}
+                        <li>{{ f }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+                <div class="alert alert-danger">
+                    <h6>Pesticide</h6>
+                    <ul>
+                        {% for p in pesticide %}
+                        <li>{{ p }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+                <div class="alert alert-warning">
+                    <h6>Organic</h6>
+                    <ul>
+                        {% for o in organic %}
+                        <li>{{ o }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+        {% endif %}
+
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/language.js') }}"></script>
+<script src="{{ url_for('static', filename='js/weather.js') }}"></script>
+
+<script>
+let video = document.getElementById("camera");
+let canvas = document.getElementById("canvas");
+let captureBtn = document.getElementById("capture-btn");
+let stream = null;
+
+function showTab(tab) {
+    document.getElementById("upload-tab").classList.add("d-none");
+    document.getElementById("camera-tab").classList.add("d-none");
+
+    if (tab === "camera") {
+        document.getElementById("camera-tab").classList.remove("d-none");
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(s => {
+                stream = s;
+                video.srcObject = s;
+            });
+    } else {
+        document.getElementById("upload-tab").classList.remove("d-none");
+        if (stream) stream.getTracks().forEach(t => t.stop());
+    }
+}
+
+captureBtn.onclick = () => {
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    canvas.getContext("2d").drawImage(video, 0, 0);
+
+    const imageData = canvas.toDataURL("image/jpeg");
+
+    const form = document.createElement("form");
+    form.method = "POST";
+    form.action = "/camera_predict";
+
+    const input = document.createElement("input");
+    input.type = "hidden";
+    input.name = "image";
+    input.value = imageData;
+
+    form.appendChild(input);
+    document.body.appendChild(form);
+    form.submit();
+};
+</script>
+
+{% endblock %}

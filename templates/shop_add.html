@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container my-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+
+      <div class="card shadow-lg rounded-4">
+        <div class="card-body p-4">
+
+          <h4 class="text-center text-success mb-3">
+            Add Shop Details
+          </h4>
+
+          <form method="POST" id="shopForm">
+
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Shop Name</label>
+              <input
+                class="form-control rounded-pill"
+                name="shop_name"
+                placeholder="Enter shop name"
+                required
+              >
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Contact Number</label>
+              <input
+                class="form-control rounded-pill"
+                name="phone"
+                placeholder="Enter contact number"
+                required
+              >
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Shop Address</label>
+              <textarea
+                class="form-control rounded-3"
+                name="address"
+                placeholder="Enter full shop address"
+                rows="3"
+                required
+              ></textarea>
+            </div>
+
+            <!-- HIDDEN LOCATION FIELDS -->
+            <input type="hidden" name="latitude" id="latitude">
+            <input type="hidden" name="longitude" id="longitude">
+
+            <!-- LOCATION STATUS -->
+            <div id="locationStatus" class="text-center small text-muted mb-3">
+              📍 Fetching shop location...
+            </div>
+
+            <button
+              type="submit"
+              class="btn btn-success w-100 rounded-pill fw-bold"
+            >
+              Save Shop Details
+            </button>
+
+          </form>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- GEOLOCATION SCRIPT -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+  const latInput = document.getElementById("latitude");
+  const lngInput = document.getElementById("longitude");
+  const status = document.getElementById("locationStatus");
+
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      function (position) {
+        latInput.value = position.coords.latitude;
+        lngInput.value = position.coords.longitude;
+        status.innerHTML = "✅ Location captured successfully";
+        status.classList.add("text-success");
+      },
+      function () {
+        status.innerHTML = "❌ Location access denied. Cannot add shop.";
+        status.classList.add("text-danger");
+      }
+    );
+  } else {
+    status.innerHTML = "❌ Geolocation not supported by this browser";
+    status.classList.add("text-danger");
+  }
+
+});
+</script>
+
+{% endblock %}

@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container my-5">
+
+  <!-- HEADER -->
+  <div class="text-center mb-4">
+    <i class="fa-solid fa-store fa-3x text-success mb-2"></i>
+    <h2 class="fw-bold text-success">Shopkeeper Dashboard</h2>
+    <p class="text-muted">
+      Manage your shop details, products, and reach nearby farmers
+    </p>
+  </div>
+
+  {% if shop %}
+  <!-- SHOP DETAILS -->
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="card shadow border-0 rounded-4">
+        <div class="card-body p-4">
+
+          <h5 class="fw-bold text-center mb-4">
+            <i class="fa-solid fa-circle-info me-2 text-success"></i>
+            Shop Information
+          </h5>
+
+          <table class="table table-borderless align-middle">
+            <tr>
+              <th width="40%">Shop Name</th>
+              <td>{{ shop.shop_name }}</td>
+            </tr>
+            <tr>
+              <th>Contact Number</th>
+              <td>{{ shop.phone }}</td>
+            </tr>
+            <tr>
+              <th>Address</th>
+              <td>{{ shop.address }}</td>
+            </tr>
+            <tr>
+              <th>Latitude</th>
+              <td>{{ shop.latitude }}</td>
+            </tr>
+            <tr>
+              <th>Longitude</th>
+              <td>{{ shop.longitude }}</td>
+            </tr>
+          </table>
+
+          <!-- ACTION BUTTONS -->
+          <div class="d-grid gap-3 mt-4">
+
+            <!-- EDIT SHOP -->
+            <a href="{{ url_for('add_shop') }}"
+               class="btn btn-success rounded-pill">
+              <i class="fa-solid fa-pen-to-square me-2"></i>
+              Edit Shop Details
+            </a>
+
+            <!-- ADD PRODUCT -->
+            <a href="{{ url_for('add_product') }}"
+               class="btn btn-primary rounded-pill">
+              <i class="fa-solid fa-plus me-2"></i>
+              Add Product
+            </a>
+
+            <!-- VIEW PRODUCTS -->
+            <a href="{{ url_for('shop_products') }}"
+               class="btn btn-outline-success rounded-pill">
+              <i class="fa-solid fa-boxes-stacked me-2"></i>
+              View My Products
+            </a>
+
+            <!-- LOGOUT -->
+            <a href="{{ url_for('logout') }}"
+               class="btn btn-outline-danger rounded-pill">
+              <i class="fa-solid fa-right-from-bracket me-2"></i>
+              Logout
+            </a>
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {% else %}
+  <!-- NO SHOP FOUND -->
+  <div class="text-center mt-5">
+
+    <i class="fa-solid fa-store-slash fa-3x text-danger mb-3"></i>
+
+    <h5 class="fw-bold text-danger">No Shop Details Found</h5>
+    <p class="text-muted">
+      Add your shop details to appear in nearby fertilizer shop listings.
+    </p>
+
+    <a href="{{ url_for('add_shop') }}"
+       class="btn btn-success rounded-pill mt-3 px-4">
+      <i class="fa-solid fa-plus me-2"></i>
+      Add Shop Details
+    </a>
+
+  </div>
+  {% endif %}
+
+</div>
+
+{% endblock %}
