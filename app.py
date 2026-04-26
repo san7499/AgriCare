@@ -26,7 +26,7 @@ ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg"}
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
-app.config["MONGO_URI"] = "mongodb+srv://sonu74swami_db_user:Swami1234@cluster0.fsqldpa.mongodb.net/agricare?retryWrites=true&w=majority"
+app.config["MONGO_URI"] = os.getenv("MONGO_URI")
 
 mongo = PyMongo(app)
 
