@@ -1,7 +1,7 @@
 flask
-tensorflow
-keras
+gunicorn
+requests
 numpy
 pillow
-opencv-python
-matplotlib
+python-dotenv
+flask-login

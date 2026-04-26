@@ -1,16 +1,108 @@
 {% extends "base.html" %}
 {% block content %}
 
+<style>
+
+/* BACKGROUND */
+body {
+  background: linear-gradient(135deg, #e8f5e9, #f1f8f4);
+}
+
+/* HEADER */
+.shop-header {
+  animation: fadeDown 0.8s ease;
+}
+
+/* GLASS CARD */
+.product-card {
+  background: rgba(255,255,255,0.9);
+  backdrop-filter: blur(12px);
+  border-radius: 18px;
+  padding: 20px;
+  height: 100%;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+  transition: all 0.3s ease;
+}
+
+/* HOVER EFFECT */
+.product-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+}
+
+/* TITLE */
+.product-title {
+  font-weight: 700;
+  color: #2e7d32;
+}
+
+/* PRICE */
+.product-price {
+  font-size: 18px;
+  font-weight: bold;
+  color: #2e7d32;
+}
+
+/* BADGE */
+.badge-modern {
+  border-radius: 12px;
+  padding: 6px 12px;
+  font-size: 12px;
+}
+
+/* BACK BUTTON */
+.btn-back {
+  border-radius: 30px;
+  padding: 10px 25px;
+  font-weight: 600;
+  transition: 0.3s;
+}
+.btn-back:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+/* EMPTY STATE */
+.empty-box {
+  background: rgba(255,255,255,0.9);
+  padding: 30px;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+  animation: fadeIn 1s ease;
+}
+
+/* ANIMATIONS */
+@keyframes fadeIn {
+  from {opacity:0;}
+  to {opacity:1;}
+}
+
+@keyframes fadeDown {
+  from {opacity:0; transform: translateY(-20px);}
+  to {opacity:1; transform: translateY(0);}
+}
+
+/* CARD ENTRY ANIMATION */
+.product-card {
+  animation: fadeInUp 0.6s ease;
+}
+@keyframes fadeInUp {
+  from {opacity:0; transform: translateY(30px);}
+  to {opacity:1; transform: translateY(0);}
+}
+
+</style>
+
 <div class="container my-5">
 
   <!-- HEADER -->
-  <div class="text-center mb-4">
+  <div class="text-center mb-5 shop-header">
     <i class="fa-solid fa-store fa-3x text-success mb-2"></i>
     <h2 class="fw-bold text-success">
-      Products Available at {{ shop.shop_name }}
+      {{ shop.shop_name }}
     </h2>
     <p class="text-muted">
-      Contact: {{ shop.phone }} | {{ shop.address }}
+      📞 {{ shop.phone }} &nbsp; | &nbsp; 📍 {{ shop.address }}
     </p>
   </div>
 
@@ -19,60 +111,61 @@
 
     {% for product in products %}
     <div class="col-md-6 col-lg-4">
-      <div class="card shadow-sm border-0 rounded-4 h-100">
 
-        <div class="card-body p-4">
+      <div class="product-card">
 
-          <!-- PRODUCT NAME -->
-          <h5 class="fw-bold text-success mb-2">
-            <i class="fa-solid fa-tag me-2"></i>
-            {{ product.name }}
-          </h5>
+        <!-- PRODUCT NAME -->
+        <h5 class="product-title mb-2">
+          <i class="fa-solid fa-tag me-2"></i>
+          {{ product.name }}
+        </h5>
 
-          <!-- CATEGORY -->
-          {% if product.category %}
-          <span class="badge bg-primary mb-2">
-            {{ product.category }}
-          </span>
-          {% endif %}
+        <!-- CATEGORY -->
+        {% if product.category %}
+        <span class="badge bg-primary badge-modern">
+          {{ product.category }}
+        </span>
+        {% endif %}
 
-          <!-- DESCRIPTION -->
-          {% if product.description %}
-          <p class="text-muted mt-2">
-            {{ product.description }}
-          </p>
-          {% endif %}
+        <!-- DESCRIPTION -->
+        {% if product.description %}
+        <p class="text-muted mt-2 small">
+          {{ product.description }}
+        </p>
+        {% endif %}
 
-          <!-- PRICE -->
-          {% if product.price %}
-          <p class="mt-3 mb-0">
-            <i class="fa-solid fa-indian-rupee-sign me-2 text-success"></i>
-            <b>₹{{ product.price }}</b>
-          </p>
-          {% endif %}
+        <!-- PRICE -->
+        {% if product.price %}
+        <p class="product-price mt-3">
+          <i class="fa-solid fa-indian-rupee-sign me-2"></i>
+          ₹{{ product.price }}
+        </p>
+        {% endif %}
 
-        </div>
       </div>
+
     </div>
     {% endfor %}
 
   </div>
 
   {% else %}
-  <!-- NO PRODUCTS -->
-  <div class="text-center mt-5">
-    <i class="fa-solid fa-circle-exclamation fa-2x text-danger mb-2"></i>
+
+  <!-- EMPTY STATE -->
+  <div class="text-center mt-5 empty-box">
+    <i class="fa-solid fa-circle-exclamation fa-2x text-danger mb-3"></i>
     <h5 class="fw-bold text-danger">No Products Available</h5>
     <p class="text-muted">
       This shop has not added any products yet.
     </p>
   </div>
+
   {% endif %}
 
   <!-- BACK BUTTON -->
-  <div class="text-center mt-4">
+  <div class="text-center mt-5">
     <a href="{{ url_for('shops') }}"
-       class="btn btn-secondary rounded-pill px-4">
+       class="btn btn-secondary btn-back">
       <i class="fa-solid fa-arrow-left me-2"></i>
       Back to Shops
     </a>

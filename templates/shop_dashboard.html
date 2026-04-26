@@ -1,108 +1,204 @@
 {% extends "base.html" %}
 {% block content %}
 
+<style>
+
+/* BACKGROUND */
+body {
+  background: linear-gradient(135deg, #e8f5e9, #f1f8f4);
+}
+
+/* HEADER */
+.dashboard-header {
+  animation: fadeDown 0.8s ease;
+}
+
+/* GLASS CARD */
+.dashboard-card {
+  background: rgba(255,255,255,0.9);
+  backdrop-filter: blur(12px);
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+  animation: fadeUp 0.8s ease;
+}
+
+/* INFO BOX */
+.info-box {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.info-box:last-child {
+  border-bottom: none;
+}
+
+/* LABEL */
+.info-label {
+  font-weight: 600;
+  color: #555;
+}
+
+/* VALUE */
+.info-value {
+  color: #2e7d32;
+  font-weight: 500;
+}
+
+/* BUTTON */
+.btn-modern {
+  border-radius: 30px;
+  font-weight: 600;
+  padding: 10px;
+  transition: 0.3s;
+}
+
+/* BUTTON HOVER */
+.btn-modern:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.2);
+}
+
+/* GRADIENT BUTTONS */
+.btn-success-modern {
+  background: linear-gradient(135deg, #43a047, #2e7d32);
+  border: none;
+  color: white;
+}
+
+.btn-primary-modern {
+  background: linear-gradient(135deg, #1e88e5, #1565c0);
+  border: none;
+  color: white;
+}
+
+/* EMPTY STATE */
+.empty-box {
+  background: rgba(255,255,255,0.9);
+  padding: 35px;
+  border-radius: 18px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+  animation: fadeIn 1s ease;
+}
+
+/* ANIMATIONS */
+@keyframes fadeIn {
+  from {opacity:0;}
+  to {opacity:1;}
+}
+
+@keyframes fadeDown {
+  from {opacity:0; transform: translateY(-20px);}
+  to {opacity:1; transform: translateY(0);}
+}
+
+@keyframes fadeUp {
+  from {opacity:0; transform: translateY(30px);}
+  to {opacity:1; transform: translateY(0);}
+}
+
+</style>
+
 <div class="container my-5">
 
   <!-- HEADER -->
-  <div class="text-center mb-4">
+  <div class="text-center mb-5 dashboard-header">
     <i class="fa-solid fa-store fa-3x text-success mb-2"></i>
     <h2 class="fw-bold text-success">Shopkeeper Dashboard</h2>
     <p class="text-muted">
-      Manage your shop details, products, and reach nearby farmers
+      Manage your shop, products, and reach nearby farmers
     </p>
   </div>
 
   {% if shop %}
-  <!-- SHOP DETAILS -->
+
   <div class="row justify-content-center">
     <div class="col-lg-8">
-      <div class="card shadow border-0 rounded-4">
-        <div class="card-body p-4">
 
-          <h5 class="fw-bold text-center mb-4">
-            <i class="fa-solid fa-circle-info me-2 text-success"></i>
-            Shop Information
-          </h5>
+      <div class="dashboard-card">
 
-          <table class="table table-borderless align-middle">
-            <tr>
-              <th width="40%">Shop Name</th>
-              <td>{{ shop.shop_name }}</td>
-            </tr>
-            <tr>
-              <th>Contact Number</th>
-              <td>{{ shop.phone }}</td>
-            </tr>
-            <tr>
-              <th>Address</th>
-              <td>{{ shop.address }}</td>
-            </tr>
-            <tr>
-              <th>Latitude</th>
-              <td>{{ shop.latitude }}</td>
-            </tr>
-            <tr>
-              <th>Longitude</th>
-              <td>{{ shop.longitude }}</td>
-            </tr>
-          </table>
+        <h5 class="text-center fw-bold mb-4">
+          <i class="fa-solid fa-circle-info me-2 text-success"></i>
+          Shop Information
+        </h5>
 
-          <!-- ACTION BUTTONS -->
-          <div class="d-grid gap-3 mt-4">
+        <!-- INFO -->
+        <div class="info-box">
+          <span class="info-label">Shop Name</span>
+          <span class="info-value">{{ shop.shop_name }}</span>
+        </div>
 
-            <!-- EDIT SHOP -->
-            <a href="{{ url_for('add_shop') }}"
-               class="btn btn-success rounded-pill">
-              <i class="fa-solid fa-pen-to-square me-2"></i>
-              Edit Shop Details
-            </a>
+        <div class="info-box">
+          <span class="info-label">Contact</span>
+          <span class="info-value">{{ shop.phone }}</span>
+        </div>
 
-            <!-- ADD PRODUCT -->
-            <a href="{{ url_for('add_product') }}"
-               class="btn btn-primary rounded-pill">
-              <i class="fa-solid fa-plus me-2"></i>
-              Add Product
-            </a>
+        <div class="info-box">
+          <span class="info-label">Address</span>
+          <span class="info-value">{{ shop.address }}</span>
+        </div>
 
-            <!-- VIEW PRODUCTS -->
-            <a href="{{ url_for('shop_products') }}"
-               class="btn btn-outline-success rounded-pill">
-              <i class="fa-solid fa-boxes-stacked me-2"></i>
-              View My Products
-            </a>
+        <div class="info-box">
+          <span class="info-label">Latitude</span>
+          <span class="info-value">{{ shop.latitude }}</span>
+        </div>
 
-            <!-- LOGOUT -->
-            <a href="{{ url_for('logout') }}"
-               class="btn btn-outline-danger rounded-pill">
-              <i class="fa-solid fa-right-from-bracket me-2"></i>
-              Logout
-            </a>
+        <div class="info-box">
+          <span class="info-label">Longitude</span>
+          <span class="info-value">{{ shop.longitude }}</span>
+        </div>
 
-          </div>
+        <!-- ACTION BUTTONS -->
+        <div class="d-grid gap-3 mt-4">
+
+
+          <a href="{{ url_for('add_product') }}"
+             class="btn btn-primary-modern btn-modern">
+            <i class="fa-solid fa-plus me-2"></i>
+            Add Product
+          </a>
+
+          <a href="{{ url_for('shop_products') }}"
+             class="btn btn-outline-success btn-modern">
+            <i class="fa-solid fa-boxes-stacked me-2"></i>
+            View My Products
+          </a>
+
+          <a href="{{ url_for('logout') }}"
+             class="btn btn-outline-danger btn-modern">
+            <i class="fa-solid fa-right-from-bracket me-2"></i>
+            Logout
+          </a>
 
         </div>
+
       </div>
+
     </div>
   </div>
 
   {% else %}
-  <!-- NO SHOP FOUND -->
-  <div class="text-center mt-5">
+
+  <!-- EMPTY -->
+  <div class="text-center mt-5 empty-box">
 
     <i class="fa-solid fa-store-slash fa-3x text-danger mb-3"></i>
 
-    <h5 class="fw-bold text-danger">No Shop Details Found</h5>
+    <h5 class="fw-bold text-danger">No Shop Found</h5>
     <p class="text-muted">
-      Add your shop details to appear in nearby fertilizer shop listings.
+      Add your shop details to appear in nearby listings
     </p>
 
     <a href="{{ url_for('add_shop') }}"
-       class="btn btn-success rounded-pill mt-3 px-4">
+       class="btn btn-success-modern btn-modern px-4 mt-3">
       <i class="fa-solid fa-plus me-2"></i>
-      Add Shop Details
+      Add Shop
     </a>
 
   </div>
+
   {% endif %}
 
 </div>

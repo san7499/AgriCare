@@ -1,3 +1,6 @@
+// ===============================
+// 🌐 TRANSLATIONS
+// ===============================
 const translations = {
     en: {
         upload_tab: "Upload Image",
@@ -49,12 +52,54 @@ const translations = {
     }
 };
 
-document.getElementById("language-select").addEventListener("change", function () {
-    const lang = this.value;
+// ===============================
+// 🔁 APPLY TRANSLATION
+// ===============================
+function applyTranslation(lang) {
+
+    const selectedLang = translations[lang] ? lang : "en";
+
+    // Save to localStorage
+    localStorage.setItem("selectedLang", selectedLang);
+
+    // Update all text elements
     document.querySelectorAll("[data-translate]").forEach(el => {
         const key = el.dataset.translate;
-        if (translations[lang] && translations[lang][key]) {
-            el.innerText = translations[lang][key];
+
+        if (translations[selectedLang][key]) {
+
+            // If input/textarea → placeholder
+            if (el.placeholder !== undefined) {
+                el.placeholder = translations[selectedLang][key];
+            }
+            // Else → inner text
+            else {
+                el.innerText = translations[selectedLang][key];
+            }
         }
     });
+
+}
+
+// ===============================
+// 🎯 EVENT LISTENER
+// ===============================
+document.addEventListener("DOMContentLoaded", function () {
+
+    const languageSelect = document.getElementById("language-select");
+
+    // Load saved language
+    const savedLang = localStorage.getItem("selectedLang") || "en";
+
+    if (languageSelect) {
+        languageSelect.value = savedLang;
+
+        languageSelect.addEventListener("change", function () {
+            applyTranslation(this.value);
+        });
+    }
+
+    // Apply translation on load
+    applyTranslation(savedLang);
+
 });

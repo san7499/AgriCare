@@ -2,124 +2,222 @@
 {% block content %}
 
 <style>
+
+/* BACKGROUND */
+body {
+    background: linear-gradient(135deg, #e8f5e9, #f1f8f4);
+}
+
+/* FADE ANIMATION */
+.fade-in {
+    animation: fadeIn 0.8s ease-in-out;
+}
+@keyframes fadeIn {
+    from {opacity:0; transform: translateY(20px);}
+    to {opacity:1; transform: translateY(0);}
+}
+
+/* GLASS CARD */
+.glass-card {
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(12px);
+    border-radius: 18px;
+    padding: 25px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    transition: 0.3s;
+}
+.glass-card:hover {
+    transform: translateY(-6px);
+}
+
+/* NAV TABS */
+.nav-pills .nav-link {
+    border-radius: 12px;
+    padding: 10px 20px;
+    font-weight: 500;
+    transition: 0.3s;
+}
+.nav-pills .nav-link.active {
+    background: linear-gradient(135deg, #43a047, #2e7d32);
+}
+.nav-pills .nav-link:hover {
+    transform: translateY(-2px);
+}
+
+/* BUTTON */
+.btn-modern {
+    background: linear-gradient(135deg, #43a047, #2e7d32);
+    border: none;
+    color: white;
+    border-radius: 12px;
+    padding: 12px;
+    font-weight: 600;
+    transition: 0.3s;
+}
+.btn-modern:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+}
+
+/* CAMERA */
+.camera-box {
+    position: relative;
+    overflow: hidden;
+    border-radius: 16px;
+}
+video {
+    width: 100%;
+    border-radius: 16px;
+}
+
+/* CAPTURE BUTTON */
+.capture-btn {
+    position: absolute;
+    bottom: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, #ff9800, #f57c00);
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 30px;
+    font-weight: 600;
+    z-index: 10;
+    animation: pulse 1.5s infinite;
+}
+@keyframes pulse {
+    0% { transform: translateX(-50%) scale(1); }
+    50% { transform: translateX(-50%) scale(1.1); }
+    100% { transform: translateX(-50%) scale(1); }
+}
+
+/* PLANTS */
 .plant-img {
     width: 110px;
     height: 110px;
-    object-fit: cover;
-    border: 4px solid #28a745;
-    transition: transform 0.3s ease;
+    border-radius: 50%;
+    border: 4px solid #2e7d32;
+    transition: 0.4s;
 }
 .plant-img:hover {
-    transform: scale(1.1);
+    transform: scale(1.15);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
 }
+
+/* RESULT IMAGE */
+.result-img {
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+
+/* WEATHER */
+.weather-box img {
+    filter: drop-shadow(0px 5px 10px rgba(0,0,0,0.2));
+}
+
 </style>
 
-<div class="container my-4">
+<div class="container my-4 fade-in">
 
-    <!-- Language Selector -->
+    <h3 class="text-center mb-4 fw-bold">🌿 AgriCare AI Dashboard</h3>
+
+    <!-- LANGUAGE -->
     <div class="d-flex justify-content-end mb-3">
-        <select id="language-select" class="form-select form-select-sm w-auto">
+        <select id="language-select" class="form-select form-select-sm w-auto shadow-sm">
             <option value="en">English</option>
             <option value="hi">हिंदी</option>
             <option value="mr">मराठी</option>
-            <option value="ta">தமிழ்</option>
-            <option value="te">తెలుగు</option>
-            <option value="gu">ગુજરાતી</option>
         </select>
     </div>
 
-    <!-- Tabs -->
+    <!-- TABS -->
     <ul class="nav nav-pills mb-4 justify-content-center">
         <li class="nav-item">
-            <button class="nav-link active" onclick="showTab('upload')">
-                <i class="fa-solid fa-upload me-2"></i> Upload Image
-            </button>
+            <button class="nav-link active" onclick="showTab('upload')" data-translate="upload_tab">Upload</button>
         </li>
         <li class="nav-item">
-            <button class="nav-link" onclick="showTab('camera')">
-                <i class="fa-solid fa-camera me-2"></i> Capture Image
-            </button>
+            <button class="nav-link active" onclick="showTab('camera')" data-translate="camera_tab">Camera</button>
         </li>
     </ul>
 
     <div class="row g-4">
 
-        <!-- LEFT COLUMN -->
+        <!-- LEFT -->
         <div class="col-lg-6">
 
-            <!-- Upload Section -->
-            <div class="card p-4" id="upload-tab">
-                <h5 class="text-center mb-3">Upload Leaf Image</h5>
+            <!-- Upload -->
+            <div class="glass-card" id="upload-tab">
+                <h5 class="text-center mb-3" data-translate="upload_title">Upload Leaf Image</h5>
                 <form method="POST" enctype="multipart/form-data">
-                    <input class="form-control mb-3" type="file" name="file" accept="image/*" required>
-                    <button type="submit" class="btn btn-success w-100">
-                        Upload & Predict
+                    <input class="form-control mb-3" type="file" name="file" required>
+                    <button type="submit" class="btn-modern w-100" data-translate="upload_btn">
+                        Upload & Predict 🚀
                     </button>
                 </form>
             </div>
 
-            <!-- Camera Section -->
-            <div class="card p-4 d-none" id="camera-tab">
-                <h5 class="text-center mb-3">Capture Leaf Image</h5>
+            <!-- CAMERA -->
+            <div class="glass-card d-none" id="camera-tab">
+                <h5 class="text-center mb-3" data-translate="camera_title">Capture Image</h5>
 
-                <video id="camera" autoplay playsinline class="w-100 rounded mb-3"></video>
+                <div class="camera-box">
+                    <video id="camera" autoplay playsinline></video>
+
+                    <!-- FIXED BUTTON -->
+                    <button id="capture-btn" class="capture-btn" data-translate="capture_btn">
+                        Capture
+                    </button>
+                </div>
+
                 <canvas id="canvas" class="d-none"></canvas>
-
-                <button id="capture-btn" class="btn btn-warning w-100">
-                    Capture & Predict
-                </button>
             </div>
 
-            <!-- Supported Plants Section -->
-            <div class="card mt-4 p-4 text-center">
-                <h5 class="mb-4">Supported Plants</h5>
+            <!-- PLANTS -->
+            <div class="glass-card mt-4 text-center">
+                <h5>Supported Plants 🌱</h5>
 
-                {% set plants = [
-                "Corn","Grape","Mango","Peanut","Potato","Tomato","Bell_Pepper"
-                ] %}
+                {% set plants = ["Corn","Grape","Mango","Peanut","Potato","Tomato","Bell_Pepper"] %}
 
-                <div class="d-flex flex-wrap justify-content-center gap-4">
+                <div class="d-flex flex-wrap justify-content-center gap-4 mt-3">
                     {% for plant in plants %}
-                    <div class="text-center">
+                    <div>
                         <img src="{{ url_for('static', filename='plants/' ~ plant ~ '.jpg') }}"
-                             class="rounded-circle plant-img shadow"
-                             alt="{{ plant }}">
-                        <p class="mt-2">{{ plant.replace('_',' ') }}</p>
+                             class="plant-img">
+                        <p>{{ plant.replace('_',' ') }}</p>
                     </div>
                     {% endfor %}
                 </div>
             </div>
 
-            <!-- Weather Section -->
-            <div class="card mt-4 p-4 text-center">
-                <h5>Current Weather</h5>
+            <!-- WEATHER -->
+            <div class="glass-card mt-4 text-center weather-box">
+                <h5 data-translate="weather_title">🌦️Weather</h5>
                 <img id="weather-icon" width="80">
-                <p id="weather-desc">Fetching weather...</p>
-                <p>🌡️ <span id="temp">--</span> °C</p>
-                <p>💧 <span id="humidity">--</span>%</p>
-                <p>🌬️ <span id="wind">--</span> m/s</p>
+                <p id="weather-desc" data-translate="weather_loading">Loading...</p>
+                <p>🌡️ <span id="temp"></span> °C</p>
+                <p>💧 <span id="humidity"></span>%</p>
+                <p>🌬️ <span id="wind"></span> m/s</p>
             </div>
 
         </div>
 
-        <!-- RIGHT COLUMN -->
+        <!-- RIGHT -->
         {% if prediction %}
         <div class="col-lg-6">
 
             <img src="{{ url_for('static', filename=file) }}"
-                 class="img-fluid rounded mb-3">
+                 class="img-fluid result-img mb-3">
 
-            <div class="card p-4">
-                <h5 class="text-center mb-3">Prediction Result</h5>
+            <div class="glass-card">
+                <h5 class="text-center mb-3" data-translate="prediction_title">Prediction Result</h5>
 
-                <p>
-                    <b>Status:</b>
+                <p><b data-translate="status">Status:</b>
                     <span class="badge {% if 'healthy' in prediction.lower() %}bg-success{% else %}bg-danger{% endif %}">
                         {{ prediction.replace('___',' - ').replace('_',' ') }}
                     </span>
                 </p>
 
-                <p><b>Confidence:</b> {{ confidence }}%</p>
+                <p><b data-translate="confidence">Confidence:</b> {{ confidence }}%</p>
 
                 <div class="progress mb-3" style="height:25px;">
                     <div class="progress-bar bg-success"
@@ -128,31 +226,16 @@
                     </div>
                 </div>
 
-                <div class="alert alert-primary">
-                    <h6>Fertilizer</h6>
-                    <ul>
-                        {% for f in fertilizer %}
-                        <li>{{ f }}</li>
-                        {% endfor %}
-                    </ul>
+                <div class="alert alert-primary"><b data-translate="fertilizer">Fertilizer</b>:
+                    <ul>{% for f in fertilizer %}<li>{{ f }}</li>{% endfor %}</ul>
                 </div>
 
-                <div class="alert alert-danger">
-                    <h6>Pesticide</h6>
-                    <ul>
-                        {% for p in pesticide %}
-                        <li>{{ p }}</li>
-                        {% endfor %}
-                    </ul>
+                <div class="alert alert-primary"><b data-translate="pesticide">Pesticide</b>:
+                    <ul>{% for p in pesticide %}<li>{{ p }}</li>{% endfor %}</ul>
                 </div>
 
-                <div class="alert alert-warning">
-                    <h6>Organic</h6>
-                    <ul>
-                        {% for o in organic %}
-                        <li>{{ o }}</li>
-                        {% endfor %}
-                    </ul>
+                <div class="alert alert-primary"><b data-translate="organic">Organic</b>:
+                    <ul>{% for o in organic %}<li>{{ o }}</li>{% endfor %}</ul>
                 </div>
 
             </div>
@@ -166,28 +249,37 @@
 <script src="{{ url_for('static', filename='js/weather.js') }}"></script>
 
 <script>
+
 let video = document.getElementById("camera");
 let canvas = document.getElementById("canvas");
 let captureBtn = document.getElementById("capture-btn");
 let stream = null;
 
 function showTab(tab) {
+
+    document.querySelectorAll(".nav-link").forEach(btn => btn.classList.remove("active"));
+    event.target.classList.add("active");
+
     document.getElementById("upload-tab").classList.add("d-none");
     document.getElementById("camera-tab").classList.add("d-none");
 
     if (tab === "camera") {
         document.getElementById("camera-tab").classList.remove("d-none");
+
         navigator.mediaDevices.getUserMedia({ video: true })
-            .then(s => {
-                stream = s;
-                video.srcObject = s;
-            });
+        .then(s => {
+            stream = s;
+            video.srcObject = s;
+        })
+        .catch(() => alert("Camera not working"));
     } else {
         document.getElementById("upload-tab").classList.remove("d-none");
-        if (stream) stream.getTracks().forEach(t => t.stop());
+
+        if (stream) {
+            stream.getTracks().forEach(t => t.stop());
+        }
     }
 }
-
 captureBtn.onclick = () => {
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
@@ -208,6 +300,7 @@ captureBtn.onclick = () => {
     document.body.appendChild(form);
     form.submit();
 };
+
 </script>
 
 {% endblock %}

@@ -1,77 +1,153 @@
 {% extends "base.html" %}
 {% block content %}
 
-<div class="container my-5">
-  <div class="row justify-content-center">
-    <div class="col-md-6">
+<style>
 
-      <div class="card shadow-lg rounded-4">
-        <div class="card-body p-4">
+/* BACKGROUND */
+body {
+  background: linear-gradient(135deg, #e8f5e9, #f1f8f4);
+}
 
-          <h4 class="text-center text-success mb-3">
-            Add Shop Details
-          </h4>
+/* WRAPPER */
+.form-wrapper {
+  min-height: 80vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
-          <form method="POST" id="shopForm">
+/* GLASS CARD */
+.form-card {
+  background: rgba(255,255,255,0.9);
+  backdrop-filter: blur(15px);
+  border-radius: 20px;
+  padding: 35px;
+  width: 100%;
+  max-width: 450px;
+  box-shadow: 0 12px 35px rgba(0,0,0,0.1);
+  animation: fadeUp 0.8s ease;
+}
 
-            <div class="mb-3">
-              <label class="form-label fw-semibold">Shop Name</label>
-              <input
-                class="form-control rounded-pill"
-                name="shop_name"
-                placeholder="Enter shop name"
-                required
-              >
-            </div>
+/* TITLE */
+.form-title {
+  text-align: center;
+  font-weight: 700;
+  color: #2e7d32;
+  margin-bottom: 25px;
+}
 
-            <div class="mb-3">
-              <label class="form-label fw-semibold">Contact Number</label>
-              <input
-                class="form-control rounded-pill"
-                name="phone"
-                placeholder="Enter contact number"
-                required
-              >
-            </div>
+/* INPUT */
+.form-control {
+  border-radius: 30px;
+  padding: 14px 18px;
+  border: 1px solid #ddd;
+  transition: 0.3s;
+}
 
-            <div class="mb-3">
-              <label class="form-label fw-semibold">Shop Address</label>
-              <textarea
-                class="form-control rounded-3"
-                name="address"
-                placeholder="Enter full shop address"
-                rows="3"
-                required
-              ></textarea>
-            </div>
+textarea.form-control {
+  border-radius: 15px;
+}
 
-            <!-- HIDDEN LOCATION FIELDS -->
-            <input type="hidden" name="latitude" id="latitude">
-            <input type="hidden" name="longitude" id="longitude">
+.form-control:focus {
+  border-color: #2e7d32;
+  box-shadow: 0 0 10px rgba(46,125,50,0.2);
+}
 
-            <!-- LOCATION STATUS -->
-            <div id="locationStatus" class="text-center small text-muted mb-3">
-              📍 Fetching shop location...
-            </div>
+/* BUTTON */
+.btn-submit {
+  background: linear-gradient(135deg, #43a047, #2e7d32);
+  border: none;
+  border-radius: 30px;
+  padding: 12px;
+  font-weight: 600;
+  transition: 0.3s;
+}
 
-            <button
-              type="submit"
-              class="btn btn-success w-100 rounded-pill fw-bold"
-            >
-              Save Shop Details
-            </button>
+.btn-submit:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.2);
+}
 
-          </form>
+/* LOADING */
+.btn-loading {
+  opacity: 0.7;
+  pointer-events: none;
+}
 
-        </div>
+/* LOCATION BOX */
+.location-box {
+  background: #f1f8e9;
+  border-radius: 12px;
+  padding: 10px;
+  font-size: 14px;
+  text-align: center;
+}
+
+/* ANIMATION */
+@keyframes fadeUp {
+  from {opacity:0; transform: translateY(30px);}
+  to {opacity:1; transform: translateY(0);}
+}
+
+</style>
+
+<div class="form-wrapper">
+
+  <div class="form-card">
+
+    <h4 class="form-title">🏪 Add Shop Details</h4>
+
+    <form method="POST" id="shopForm">
+
+      <!-- SHOP NAME -->
+      <div class="mb-3">
+        <input type="text" name="shop_name"
+               class="form-control"
+               placeholder="Shop Name"
+               required>
       </div>
 
-    </div>
+      <!-- PHONE -->
+      <div class="mb-3">
+        <input type="text" name="phone"
+               class="form-control"
+               placeholder="Contact Number"
+               required>
+      </div>
+
+      <!-- ADDRESS -->
+      <div class="mb-3">
+        <textarea name="address"
+                  class="form-control"
+                  rows="3"
+                  placeholder="Shop Address"
+                  required></textarea>
+      </div>
+
+      <!-- HIDDEN LOCATION -->
+      <input type="hidden" name="latitude" id="latitude">
+      <input type="hidden" name="longitude" id="longitude">
+
+      <!-- LOCATION STATUS -->
+      <div id="locationStatus" class="location-box mb-3 text-muted">
+        📍 Fetching location...
+      </div>
+
+      <!-- BUTTON -->
+      <button type="submit" id="submitBtn"
+              class="btn btn-submit w-100">
+        Save Shop Details
+      </button>
+
+    </form>
+
   </div>
+
 </div>
 
-<!-- GEOLOCATION SCRIPT -->
 <script>
+
+/* LOCATION */
 document.addEventListener("DOMContentLoaded", function () {
 
   const latInput = document.getElementById("latitude");
@@ -83,20 +159,31 @@ document.addEventListener("DOMContentLoaded", function () {
       function (position) {
         latInput.value = position.coords.latitude;
         lngInput.value = position.coords.longitude;
+
         status.innerHTML = "✅ Location captured successfully";
+        status.classList.remove("text-muted");
         status.classList.add("text-success");
       },
       function () {
-        status.innerHTML = "❌ Location access denied. Cannot add shop.";
+        status.innerHTML = "❌ Location access denied";
+        status.classList.remove("text-muted");
         status.classList.add("text-danger");
       }
     );
   } else {
-    status.innerHTML = "❌ Geolocation not supported by this browser";
+    status.innerHTML = "❌ Geolocation not supported";
     status.classList.add("text-danger");
   }
 
 });
+
+/* BUTTON LOADING */
+document.getElementById("shopForm").addEventListener("submit", function () {
+  const btn = document.getElementById("submitBtn");
+  btn.innerHTML = "Saving...";
+  btn.classList.add("btn-loading");
+});
+
 </script>
 
 {% endblock %}

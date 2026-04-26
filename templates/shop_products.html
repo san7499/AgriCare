@@ -1,19 +1,108 @@
 {% extends "base.html" %}
 {% block content %}
 
+<style>
+
+/* BACKGROUND */
+body {
+  background: linear-gradient(135deg, #e8f5e9, #f1f8f4);
+}
+
+/* HEADER */
+.page-header {
+  animation: fadeDown 0.8s ease;
+}
+
+/* GLASS CARD */
+.product-card {
+  background: rgba(255,255,255,0.9);
+  backdrop-filter: blur(12px);
+  border-radius: 18px;
+  padding: 20px;
+  height: 100%;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+  transition: all 0.3s ease;
+  animation: fadeUp 0.6s ease;
+}
+
+/* HOVER EFFECT */
+.product-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+}
+
+/* TITLE */
+.product-title {
+  font-weight: 700;
+  color: #2e7d32;
+}
+
+/* PRICE */
+.product-price {
+  font-size: 18px;
+  font-weight: bold;
+  color: #2e7d32;
+}
+
+/* BUTTON */
+.btn-modern {
+  border-radius: 25px;
+  font-weight: 600;
+  transition: 0.3s;
+}
+
+.btn-modern:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+}
+
+/* PRIMARY BUTTON */
+.btn-add {
+  background: linear-gradient(135deg, #43a047, #2e7d32);
+  color: white;
+  border: none;
+}
+
+/* EMPTY BOX */
+.empty-box {
+  background: rgba(255,255,255,0.9);
+  padding: 30px;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+  animation: fadeIn 1s ease;
+}
+
+/* ANIMATIONS */
+@keyframes fadeIn {
+  from {opacity:0;}
+  to {opacity:1;}
+}
+
+@keyframes fadeDown {
+  from {opacity:0; transform: translateY(-20px);}
+  to {opacity:1; transform: translateY(0);}
+}
+
+@keyframes fadeUp {
+  from {opacity:0; transform: translateY(30px);}
+  to {opacity:1; transform: translateY(0);}
+}
+
+</style>
+
 <div class="container my-5">
 
   <!-- HEADER -->
-  <div class="text-center mb-4">
+  <div class="text-center mb-5 page-header">
     <i class="fa-solid fa-boxes-stacked fa-3x text-success mb-2"></i>
     <h2 class="fw-bold text-success">My Products</h2>
     <p class="text-muted">Products available in your shop</p>
   </div>
 
-  <!-- ADD PRODUCT BUTTON -->
-  <div class="text-end mb-3">
+  <!-- ADD BUTTON -->
+  <div class="text-end mb-4">
     <a href="{{ url_for('add_product') }}"
-       class="btn btn-success rounded-pill">
+       class="btn btn-add btn-modern px-4">
       <i class="fa-solid fa-plus me-2"></i>
       Add New Product
     </a>
@@ -24,66 +113,67 @@
 
     {% for product in products %}
     <div class="col-md-6 col-lg-4">
-      <div class="card shadow-sm border-0 rounded-4 h-100">
 
-        <div class="card-body p-4">
+      <div class="product-card">
 
-          <!-- PRODUCT NAME -->
-          <h5 class="fw-bold text-success mb-2">
-            <i class="fa-solid fa-tag me-2"></i>
-            {{ product.name }}
-          </h5>
+        <!-- NAME -->
+        <h5 class="product-title mb-2">
+          <i class="fa-solid fa-tag me-2"></i>
+          {{ product.name }}
+        </h5>
 
-          <!-- CATEGORY -->
-          {% if product.category %}
-          <span class="badge bg-primary mb-2">
-            {{ product.category }}
-          </span>
-          {% endif %}
+        <!-- CATEGORY -->
+        {% if product.category %}
+        <span class="badge bg-primary mb-2">
+          {{ product.category }}
+        </span>
+        {% endif %}
 
-          <!-- DESCRIPTION -->
-          {% if product.description %}
-          <p class="text-muted mt-2">
-            {{ product.description }}
-          </p>
-          {% endif %}
+        <!-- DESCRIPTION -->
+        {% if product.description %}
+        <p class="text-muted small mt-2">
+          {{ product.description }}
+        </p>
+        {% endif %}
 
-          <!-- PRICE -->
-          {% if product.price %}
-          <p class="mb-0 mt-3">
-            <i class="fa-solid fa-indian-rupee-sign me-2 text-success"></i>
-            <b>₹{{ "%.2f"|format(product.price) }}</b>
-          </p>
-          {% endif %}
+        <!-- PRICE -->
+        {% if product.price %}
+        <p class="product-price mt-3">
+          <i class="fa-solid fa-indian-rupee-sign me-2"></i>
+          ₹{{ "%.2f"|format(product.price) }}
+        </p>
+        {% endif %}
 
-        </div>
       </div>
+
     </div>
     {% endfor %}
 
   </div>
 
   {% else %}
-  <!-- NO PRODUCTS -->
-  <div class="text-center mt-5">
-    <i class="fa-solid fa-circle-exclamation fa-2x text-danger mb-2"></i>
+
+  <!-- EMPTY -->
+  <div class="text-center mt-5 empty-box">
+    <i class="fa-solid fa-circle-exclamation fa-2x text-danger mb-3"></i>
     <h5 class="fw-bold text-danger">No products added yet</h5>
     <p class="text-muted">
       Start adding products so nearby farmers can see them.
     </p>
 
     <a href="{{ url_for('add_product') }}"
-       class="btn btn-success rounded-pill mt-3 px-4">
+       class="btn btn-add btn-modern mt-3 px-4">
       <i class="fa-solid fa-plus me-2"></i>
       Add First Product
     </a>
   </div>
+
   {% endif %}
 
-  <!-- BACK BUTTON -->
-  <div class="text-center mt-4">
+  <!-- BACK -->
+  <div class="text-center mt-5">
     <a href="{{ url_for('shop_dashboard') }}"
-       class="btn btn-secondary rounded-pill px-4">
+       class="btn btn-secondary btn-modern px-4">
       <i class="fa-solid fa-arrow-left me-2"></i>
       Back to Dashboard
     </a>

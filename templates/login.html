@@ -1,90 +1,197 @@
 {% extends "base.html" %}
 {% block content %}
 
-<div class="row justify-content-center mt-5">
-  <div class="col-md-6 col-lg-5">
-    <div class="card shadow-lg border-0 rounded-4">
-      <div class="card-body p-5">
+<style>
 
-        <h2 class="text-center mb-4 text-success fw-bold">
-          Login to AgriCare
-        </h2>
+/* BACKGROUND */
+body {
+  background: linear-gradient(135deg, #e8f5e9, #f1f8f4);
+}
 
-        <!-- Flash Messages -->
-        {% with messages = get_flashed_messages() %}
-          {% if messages %}
-            <div class="alert alert-danger text-center">
-              {% for message in messages %}
-                <div>{{ message }}</div>
-              {% endfor %}
-            </div>
-          {% endif %}
-        {% endwith %}
+/* CENTER WRAPPER */
+.login-wrapper {
+  min-height: 80vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
-        <form method="POST" id="loginForm">
+/* GLASS CARD */
+.login-card {
+  background: rgba(255,255,255,0.85);
+  backdrop-filter: blur(15px);
+  border-radius: 20px;
+  padding: 40px;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  animation: fadeInUp 0.8s ease;
+}
 
-          <div class="mb-3">
-            <label class="form-label fw-semibold">Username</label>
-            <input
-              type="text"
-              name="username"
-              class="form-control rounded-pill"
-              placeholder="Enter your username"
-              required
-            >
-          </div>
+/* TITLE */
+.login-title {
+  text-align: center;
+  font-weight: 700;
+  color: #2e7d32;
+  margin-bottom: 30px;
+}
 
-          <div class="mb-4">
-            <label class="form-label fw-semibold">Password</label>
-            <input
-              type="password"
-              name="password"
-              class="form-control rounded-pill"
-              placeholder="Enter your password"
-              required
-            >
-          </div>
+/* FLOATING INPUT */
+.form-group {
+  position: relative;
+  margin-bottom: 25px;
+}
 
-          <!-- HIDDEN LOCATION FIELDS -->
-          <input type="hidden" name="latitude" id="latitude">
-          <input type="hidden" name="longitude" id="longitude">
+.form-control {
+  border-radius: 30px;
+  padding: 14px 20px;
+  border: 1px solid #ddd;
+  transition: 0.3s;
+}
 
-          <button type="submit" class="btn btn-success w-100 rounded-pill fw-bold">
-            Login
-          </button>
-        </form>
+.form-control:focus {
+  border-color: #2e7d32;
+  box-shadow: 0 0 10px rgba(46,125,50,0.2);
+}
 
-        <hr class="my-4">
+/* PASSWORD TOGGLE */
+.password-toggle {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #777;
+}
 
-        <p class="text-center mb-0">
-          New to AgriCare?
-          <a href="{{ url_for('signup') }}" class="text-success fw-semibold text-decoration-none">
-            Create an account
-          </a>
-        </p>
+/* BUTTON */
+.btn-login {
+  background: linear-gradient(135deg, #43a047, #2e7d32);
+  border: none;
+  border-radius: 30px;
+  padding: 12px;
+  font-weight: 600;
+  transition: 0.3s;
+}
 
+.btn-login:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+}
+
+/* LOADING */
+.btn-loading {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+/* LINK */
+.signup-link {
+  color: #2e7d32;
+  font-weight: 600;
+  text-decoration: none;
+}
+.signup-link:hover {
+  text-decoration: underline;
+}
+
+/* ANIMATION */
+@keyframes fadeInUp {
+  from {opacity:0; transform: translateY(30px);}
+  to {opacity:1; transform: translateY(0);}
+}
+
+</style>
+
+<div class="login-wrapper">
+
+  <div class="login-card">
+
+    <h2 class="login-title">🌿 Login to AgriCare</h2>
+
+    <!-- FLASH -->
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="alert alert-danger text-center">
+          {% for message in messages %}
+            <div>{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <form method="POST" id="loginForm">
+
+      <!-- USERNAME -->
+      <div class="form-group">
+        <input type="text" name="username" class="form-control"
+               placeholder="Username" required>
       </div>
-    </div>
+
+      <!-- PASSWORD -->
+      <div class="form-group">
+        <input type="password" name="password" id="password"
+               class="form-control" placeholder="Password" required>
+        <span class="password-toggle" onclick="togglePassword()">
+          👁️
+        </span>
+      </div>
+
+      <!-- LOCATION -->
+      <input type="hidden" name="latitude" id="latitude">
+      <input type="hidden" name="longitude" id="longitude">
+
+      <!-- BUTTON -->
+      <button type="submit" id="loginBtn" class="btn btn-login w-100">
+        Login
+      </button>
+
+    </form>
+
+    <hr class="my-4">
+
+    <p class="text-center mb-0">
+      New to AgriCare?
+      <a href="{{ url_for('signup') }}" class="signup-link">
+        Create an account
+      </a>
+    </p>
+
   </div>
+
 </div>
 
-<!-- GEOLOCATION SCRIPT -->
+<!-- SCRIPT -->
 <script>
-document.addEventListener("DOMContentLoaded", function () {
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-            function (position) {
-                document.getElementById("latitude").value = position.coords.latitude;
-                document.getElementById("longitude").value = position.coords.longitude;
-            },
-            function (error) {
-                alert("Location access is required to find nearby shops.");
-            }
-        );
-    } else {
-        alert("Geolocation is not supported by this browser.");
-    }
+
+/* PASSWORD TOGGLE */
+function togglePassword() {
+  const pass = document.getElementById("password");
+  pass.type = pass.type === "password" ? "text" : "password";
+}
+
+/* BUTTON LOADING */
+document.getElementById("loginForm").addEventListener("submit", function () {
+  const btn = document.getElementById("loginBtn");
+  btn.innerHTML = "Logging in...";
+  btn.classList.add("btn-loading");
 });
+
+/* GEOLOCATION */
+document.addEventListener("DOMContentLoaded", function () {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      function (position) {
+        document.getElementById("latitude").value = position.coords.latitude;
+        document.getElementById("longitude").value = position.coords.longitude;
+      },
+      function () {
+        console.log("Location permission denied");
+      }
+    );
+  }
+});
+
 </script>
 
 {% endblock %}
